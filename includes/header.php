@@ -1,3 +1,9 @@
+<?php
+// Start the session if it hasn't been started yet
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,10 +33,11 @@
             </div>
         </div>
     </nav>
-    <main class="container mx-auto px-4 py-8"><?php if(isset($_SESSION['message'])): ?>
+    <main class="container mx-auto px-4 py-8">
+    <?php if(isset($_SESSION['message'])): ?>
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
             <?php 
-            echo $_SESSION['message']; 
+            echo htmlspecialchars($_SESSION['message']); 
             unset($_SESSION['message']);
             ?>
         </div>
