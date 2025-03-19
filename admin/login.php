@@ -2,87 +2,51 @@
 session_start();
 require_once '../config/database.php';
 
-// Initialize variables
-$username = $password = "";
-$username_err = $password_err = $login_err = "";
-
-// Check if already logged in
-if(isset($_SESSION["admin_loggedin"]) && $_SESSION["admin_loggedin"] === true) {
-    header("location: dashboard.php");
-    exit;
+// If admin is already logged in, redirect to admin dashboard
+if (isset($_SESSION['admin_id'])) {
+    header("Location: dashboard.php");
+    exit();
 }
 
-// Process form data when submitted
-if($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validate username
-    if(empty(trim($_POST["username"]))) {
-        $username_err = "Please enter username.";
-    } else {
-        $username = trim($_POST["username"]);
+$errors = [];
+$email = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+
+    // Validate email
+    if (empty($email)) {
+        $errors['email'] = 'Email is required';
     }
-    
+
     // Validate password
-    if(empty(trim($_POST["password"]))) {
-        $password_err = "Please enter your password.";
-    } else {
-        $password = trim($_POST["password"]);
+    if (empty($password)) {
+        $errors['password'] = 'Password is required';
     }
-    
-    // Validate credentials
-    if(empty($username_err) && empty($password_err)) {
-        $sql = "SELECT id, username, password FROM admin_users WHERE username = :username";
-        
-        if($stmt = $conn->prepare($sql)) {
-            $stmt->bindParam(":username", $param_username, PDO::PARAM_STR);
-            $param_username = $username;
-            
-            if($stmt->execute()) {
-                if($stmt->rowCount() == 1) {
-                    if($row = $stmt->fetch()) {
-                        $id = $row["id"];
-                        $username = $row["username"];
-                        $hashed_password = $row["password"];
-                        if(password_verify($password, $hashed_password)) {
-                            // Password is correct, start a new session
-                            session_regenerate_id(true); // Prevent session fixation attacks
-                            
-                            // Store data in session variables
-                            $_SESSION["admin_loggedin"] = true;
-                            $_SESSION["admin_id"] = $id;
-                            $_SESSION["admin_username"] = $username;
-                            $_SESSION["last_activity"] = time(); // For session timeout
-                            
-                            // Log successful login
-                            $log_sql = "INSERT INTO admin_login_logs (admin_id, action, ip_address) VALUES (:admin_id, 'login', :ip)";
-                            $log_stmt = $conn->prepare($log_sql);
-                            $log_stmt->execute([
-                                ':admin_id' => $id,
-                                ':ip' => $_SERVER['REMOTE_ADDR']
-                            ]);
-                            
-                            header("location: dashboard.php");
-                            exit;
-                        } else {
-                            $login_err = "Invalid username or password.";
-                            // Log failed attempt
-                            $log_sql = "INSERT INTO admin_login_logs (username, action, ip_address, status) VALUES (:username, 'failed_login', :ip, 'failed')";
-                            $log_stmt = $conn->prepare($log_sql);
-                            $log_stmt->execute([
-                                ':username' => $username,
-                                ':ip' => $_SERVER['REMOTE_ADDR']
-                            ]);
-                        }
-                    }
-                } else {
-                    $login_err = "Invalid username or password.";
-                }
+
+    // If no validation errors, attempt login
+    if (empty($errors)) {
+        try {
+            $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE email = ? AND is_admin = TRUE");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch();
+
+            if ($user && password_verify($password, $user['password'])) {
+                // Login successful
+                $_SESSION['admin_id'] = $user['id'];
+                $_SESSION['admin_username'] = $user['username'];
+                
+                // Redirect to admin dashboard
+                header("Location: dashboard.php");
+                exit();
             } else {
-                $login_err = "Oops! Something went wrong. Please try again later.";
+                $errors['login'] = 'Invalid email or password';
             }
-            unset($stmt);
+        } catch (PDOException $e) {
+            $errors['login'] = 'Login failed. Please try again.';
         }
     }
-    unset($conn);
 }
 ?>
 <!DOCTYPE html>
@@ -94,48 +58,67 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
-    <div class="min-h-screen flex items-center justify-center">
-        <div class="bg-white p-8 rounded-lg shadow-md w-96">
-            <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Admin Login</h2>
-            
-            <?php 
-            if(!empty($login_err)){
-                echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">';
-                echo $login_err;
-                echo '</div>';
-            }        
-            ?>
+    <div class="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md">
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Admin Login
+            </h2>
+        </div>
 
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="username">Username</label>
-                    <input type="text" name="username" id="username" 
-                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline <?php echo (!empty($username_err)) ? 'border-red-500' : ''; ?>" 
-                           value="<?php echo $username; ?>">
-                    <?php if(!empty($username_err)): ?>
-                        <p class="text-red-500 text-xs italic"><?php echo $username_err; ?></p>
-                    <?php endif; ?>
-                </div>    
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                <?php if (isset($errors['login'])): ?>
+                    <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-red-700">
+                                    <?php echo htmlspecialchars($errors['login']); ?>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Password</label>
-                    <input type="password" name="password" id="password" 
-                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline <?php echo (!empty($password_err)) ? 'border-red-500' : ''; ?>">
-                    <?php if(!empty($password_err)): ?>
-                        <p class="text-red-500 text-xs italic"><?php echo $password_err; ?></p>
-                    <?php endif; ?>
-                </div>
+                <form class="space-y-6" action="login.php" method="POST">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">
+                            Email address
+                        </label>
+                        <div class="mt-1">
+                            <input id="email" name="email" type="email" required
+                                   class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                   value="<?php echo htmlspecialchars($email); ?>">
+                            <?php if (isset($errors['email'])): ?>
+                                <p class="mt-2 text-sm text-red-600"><?php echo htmlspecialchars($errors['email']); ?></p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
 
-                <div class="flex items-center justify-between">
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
-                            type="submit">Sign In</button>
-                    <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" 
-                       href="reset-password.php">Forgot Password?</a>
-                </div>
-            </form>
-            
-            <div class="mt-6 text-center">
-                <a href="../index.php" class="text-sm text-gray-600 hover:text-gray-900">Back to Homepage</a>
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700">
+                            Password
+                        </label>
+                        <div class="mt-1">
+                            <input id="password" name="password" type="password" required
+                                   class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <?php if (isset($errors['password'])): ?>
+                                <p class="mt-2 text-sm text-red-600"><?php echo htmlspecialchars($errors['password']); ?></p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit"
+                                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Sign in
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
