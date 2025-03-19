@@ -19,7 +19,7 @@ $stmt = $conn->prepare("
     FROM adoption_applications a 
     JOIN pets p ON a.pet_id = p.id 
     WHERE a.user_id = ? 
-    ORDER BY a.created_at DESC
+    ORDER BY a.application_date DESC
 ");
 $stmt->execute([$_SESSION['user_id']]);
 $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -83,7 +83,7 @@ require_once '../includes/header.php';
                                     </span>
                                 </p>
                                 <p class="text-gray-600 text-sm">
-                                    Applied on: <?php echo date('F j, Y', strtotime($application['created_at'])); ?>
+                                    Applied on: <?php echo date('F j, Y', strtotime($application['application_date'])); ?>
                                 </p>
                             </div>
                         </div>
