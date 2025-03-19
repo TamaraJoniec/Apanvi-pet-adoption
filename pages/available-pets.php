@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'config/database.php';
+require_once '../config/database.php';
 
 // Handle filters
 $species = isset($_GET['species']) ? $_GET['species'] : '';
@@ -41,7 +41,7 @@ $stmt = $conn->prepare($query);
 $stmt->execute($params);
 $pets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-include 'includes/header.php';
+include '../includes/header.php';
 ?>
 
 <div class="container mx-auto px-4 py-8">
@@ -89,7 +89,7 @@ include 'includes/header.php';
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                     Apply Filters
                 </button>
-                <a href="available-pets.php" class="ml-4 text-blue-600 hover:text-blue-800 py-2">
+                <a href="/pages/available-pets.php" class="ml-4 text-blue-600 hover:text-blue-800 py-2">
                     Clear Filters
                 </a>
             </div>
@@ -120,7 +120,7 @@ include 'includes/header.php';
                 </p>
                 <div class="flex justify-between items-center">
                     <span class="text-gray-600">Age: <?php echo htmlspecialchars($pet['age']); ?> years</span>
-                    <a href="pet-details.php?id=<?php echo $pet['id']; ?>" 
+                    <a href="/pages/pet-details.php?id=<?php echo $pet['id']; ?>" 
                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                         View Details
                     </a>
@@ -138,4 +138,4 @@ include 'includes/header.php';
     <?php endif; ?>
 </div>
 
-<?php include 'includes/footer.php'; ?> 
+<?php include '../includes/footer.php'; ?> 

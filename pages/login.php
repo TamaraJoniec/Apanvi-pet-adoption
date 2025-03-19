@@ -1,10 +1,10 @@
 <?php
-require_once 'includes/header.php';
-require_once 'config/database.php';
+require_once '../includes/header.php';
+require_once '../config/database.php';
 
 // If user is already logged in, redirect to home page
 if (isset($_SESSION['user_id'])) {
-    header("Location: index.php");
+    header("Location: /pages/index.php");
     exit();
 }
 
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['username'] = $user['username'];
                 
                 // Redirect to home page
-                header("Location: index.php");
+                header("Location: /pages/index.php");
                 exit();
             } else {
                 $errors['login'] = 'Invalid email or password';
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600">
             Or
-            <a href="register.php" class="font-medium text-blue-600 hover:text-blue-500">
+            <a href="/pages/register.php" class="font-medium text-blue-600 hover:text-blue-500">
                 create a new account
             </a>
         </p>
@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
-            <form class="space-y-6" action="login.php" method="POST">
+            <form class="space-y-6" action="/pages/login.php" method="POST">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">
                         Email address
@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <div class="text-sm">
-                        <a href="forgot-password.php" class="font-medium text-blue-600 hover:text-blue-500">
+                        <a href="/pages/forgot-password.php" class="font-medium text-blue-600 hover:text-blue-500">
                             Forgot your password?
                         </a>
                     </div>
@@ -158,5 +158,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <?php
-require_once 'includes/footer.php';
+require_once '../includes/footer.php';
 ?> 

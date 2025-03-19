@@ -1,0 +1,22 @@
+# Disable script execution
+<FilesMatch "\.(php|php3|php4|php5|phtml|pl|py|jsp|asp|htm|html|shtml|sh|cgi)$">
+    ForceType text/plain
+    Require all denied
+</FilesMatch>
+
+# Allow only image files
+<FilesMatch "\.(jpg|jpeg|png|webp)$">
+    Require all granted
+</FilesMatch>
+
+# Disable directory listing
+Options -Indexes
+
+# Protect against hotlinking
+Header set X-Frame-Options "SAMEORIGIN"
+Header set X-Content-Type-Options "nosniff"
+
+# Only allow GET and HEAD requests
+<LimitExcept GET HEAD>
+    Require all denied
+</LimitExcept> 

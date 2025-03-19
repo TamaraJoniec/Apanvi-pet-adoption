@@ -1,5 +1,5 @@
 <?php
-require_once 'includes/header.php';
+require_once '../includes/header.php';
 ?>
 
 <div class="bg-gray-100 min-h-screen">
@@ -60,10 +60,10 @@ require_once 'includes/header.php';
                             Start your journey today by browsing our available pets or registering for an account.
                         </p>
                         <div class="flex gap-4">
-                            <a href="available-pets.php" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                            <a href="/pages/available-pets.php" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
                                 Browse Pets
                             </a>
-                            <a href="register.php" class="inline-flex items-center px-4 py-2 border border-blue-600 text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50">
+                            <a href="/pages/register.php" class="inline-flex items-center px-4 py-2 border border-blue-600 text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50">
                                 Register Now
                             </a>
                         </div>
@@ -75,5 +75,5 @@ require_once 'includes/header.php';
 </div>
 
 <?php
-require_once 'includes/footer.php';
+require_once '../includes/footer.php';
 ?> 

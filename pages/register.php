@@ -1,10 +1,10 @@
 <?php
-require_once 'includes/header.php';
-require_once 'config/database.php';
+require_once '../includes/header.php';
+require_once '../config/database.php';
 
 // If user is already logged in, redirect to home page
 if (isset($_SESSION['user_id'])) {
-    header("Location: index.php");
+    header("Location: /pages/index.php");
     exit();
 }
 
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $success = true;
             
             // Redirect to login page after successful registration
-            header("Location: login.php?registered=1");
+            header("Location: /pages/login.php?registered=1");
             exit();
         } catch (PDOException $e) {
             $errors['general'] = 'Registration failed. Please try again.';
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600">
             Or
-            <a href="login.php" class="font-medium text-blue-600 hover:text-blue-500">
+            <a href="/pages/login.php" class="font-medium text-blue-600 hover:text-blue-500">
                 sign in to your existing account
             </a>
         </p>
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
-            <form class="space-y-6" action="register.php" method="POST">
+            <form class="space-y-6" action="/pages/register.php" method="POST">
                 <div>
                     <label for="username" class="block text-sm font-medium text-gray-700">
                         Username
@@ -166,5 +166,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <?php
-require_once 'includes/footer.php';
+require_once '../includes/footer.php';
 ?> 

@@ -17,17 +17,17 @@ if (session_status() === PHP_SESSION_NONE) {
     <nav class="bg-blue-600 text-white shadow-lg">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-4">
-                <a href="index.php" class="text-2xl font-bold">Pet Adoption</a>
+                <a href="/pages/index.php" class="text-2xl font-bold">Pet Adoption</a>
                 <div class="space-x-4">
-                    <a href="index.php" class="hover:text-blue-200">Home</a>
-                    <a href="available-pets.php" class="hover:text-blue-200">Available Pets</a>
-                    <a href="about.php" class="hover:text-blue-200">About</a>
+                    <a href="/pages/index.php" class="hover:text-blue-200">Home</a>
+                    <a href="/pages/available-pets.php" class="hover:text-blue-200">Available Pets</a>
+                    <a href="/pages/about.php" class="hover:text-blue-200">About</a>
                     <?php if(isset($_SESSION['user_id'])): ?>
-                        <a href="dashboard.php" class="hover:text-blue-200">Dashboard</a>
-                        <a href="logout.php" class="hover:text-blue-200">Logout</a>
+                        <a href="/pages/dashboard.php" class="hover:text-blue-200">Dashboard</a>
+                        <a href="/pages/logout.php" class="hover:text-blue-200">Logout</a>
                     <?php else: ?>
-                        <a href="login.php" class="hover:text-blue-200">Login</a>
-                        <a href="register.php" class="hover:text-blue-200">Register</a>
+                        <a href="/pages/login.php" class="hover:text-blue-200">Login</a>
+                        <a href="/pages/register.php" class="hover:text-blue-200">Register</a>
                     <?php endif; ?>
                 </div>
             </div>
