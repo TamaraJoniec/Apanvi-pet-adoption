@@ -15,14 +15,16 @@
 
 # OS files
 .DS_Store
+.localized
 Thumbs.db
 
 # Docker volumes
 mysql_data/
 
 # Uploaded files
-/assets/images/pets/*
-!/assets/images/pets/.gitkeep
+uploads/pets/*
+!uploads/pets/.htaccess
+!uploads/pets/default-pet.jpg
 
 # Logs
 *.log
@@ -31,4 +33,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Cache files
-*.cache 
+*.cache
+
+# Personal files
+todo-list.md 

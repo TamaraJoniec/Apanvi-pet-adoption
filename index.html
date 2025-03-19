@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pet Adoption System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #f9fafb;
+      }
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #e5e7eb;
+        border-top: 5px solid #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" class="loading">
+      <div class="text-center">
+        <div class="loading-spinner mx-auto mb-4"></div>
+        <p class="text-gray-600">Loading Pet Adoption System...</p>
+      </div>
+    </div>
+
+    <script>
+      async function loadContent() {
+        try {
+          // First try to fetch the test endpoint to check if PHP is working
+          const testResponse = await fetch("/api/test.php");
+          if (!testResponse.ok) {
+            throw new Error("PHP test endpoint not responding");
+          }
+
+          // If test passes, fetch the main content
+          const response = await fetch("/api/index.php");
+          if (!response.ok) {
+            throw new Error("Failed to load content");
+          }
+
+          const html = await response.text();
+          document.getElementById("app").className = ""; // Remove loading class
+          document.getElementById("app").innerHTML = html;
+        } catch (error) {
+          console.error("Error:", error);
+          document.getElementById("app").className = "";
+          document.getElementById("app").innerHTML = `
+            <div class="min-h-screen flex items-center justify-center bg-gray-50">
+              <div class="text-center p-8 bg-white rounded-lg shadow-md">
+                <h1 class="text-2xl font-bold text-red-600 mb-4">Error Loading Content</h1>
+                <p class="text-gray-600 mb-4">We're having trouble loading the Pet Adoption System.</p>
+                <p class="text-sm text-gray-500">${error.message}</p>
+                <button onclick="loadContent()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                  Try Again
+                </button>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      // Initial load
+      loadContent();
+    </script>
+  </body>
+</html>
