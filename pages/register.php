@@ -1,5 +1,5 @@
 <?php
-require_once '../includes/header.php';
+session_start();
 require_once '../config/database.php';
 
 // If user is already logged in, redirect to home page
@@ -66,6 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+// Include header after all potential redirects
+require_once '../includes/header.php';
 ?>
 
 <div class="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

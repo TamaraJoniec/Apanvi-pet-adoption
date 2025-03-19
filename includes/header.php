@@ -29,6 +29,7 @@ if (session_status() === PHP_SESSION_NONE) {
                         <a href="/pages/login.php" class="hover:text-blue-200">Login</a>
                         <a href="/pages/register.php" class="hover:text-blue-200">Register</a>
                     <?php endif; ?>
+                    <a href="/admin/login.php" class="hover:text-blue-200">Admin</a>
                 </div>
             </div>
         </div>

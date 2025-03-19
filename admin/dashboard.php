@@ -1,10 +1,9 @@
 <?php
 session_start();
-
-// Check if user is logged in
-if(!isset($_SESSION["admin_loggedin"]) || $_SESSION["admin_loggedin"] !== true){
-    header("location: login.php");
-    exit;
+// Check if user is logged in as admin
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: login.php");
+    exit();
 }
 
 require_once '../config/database.php';
@@ -19,7 +18,7 @@ $available_pets = $stmt->fetch(PDO::FETCH_ASSOC)['available'];
 $stmt = $conn->query("SELECT COUNT(*) as adopted FROM pets WHERE status = 'Adopted'");
 $adopted_pets = $stmt->fetch(PDO::FETCH_ASSOC)['adopted'];
 
-$stmt = $conn->query("SELECT COUNT(*) as total FROM admin_users");
+$stmt = $conn->query("SELECT COUNT(*) as total FROM users WHERE is_admin = FALSE");
 $total_users = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
 // Fetch statistics
@@ -67,12 +66,13 @@ try {
                             <a href="dashboard.php" class="text-xl font-bold text-gray-800">Admin Dashboard</a>
                         </div>
                         <div class="hidden md:ml-6 md:flex md:space-x-8">
-                            <a href="add-pet.php" class="inline-flex items-center px-1 pt-1 text-gray-600 hover:text-gray-900">Add Pet</a>
-                            <a href="manage-users.php" class="inline-flex items-center px-1 pt-1 text-gray-600 hover:text-gray-900">Manage Users</a>
+                            <a href="pets.php" class="inline-flex items-center px-1 pt-1 text-gray-600 hover:text-gray-900">Manage Pets</a>
+                            <a href="applications.php" class="inline-flex items-center px-1 pt-1 text-gray-600 hover:text-gray-900">Applications</a>
+                            <a href="users.php" class="inline-flex items-center px-1 pt-1 text-gray-600 hover:text-gray-900">Users</a>
                         </div>
                     </div>
                     <div class="flex items-center">
-                        <span class="text-gray-600 mr-4">Welcome, <?php echo htmlspecialchars($_SESSION["admin_username"]); ?></span>
+                        <span class="text-gray-600 mr-4">Welcome, <?php echo htmlspecialchars($_SESSION['admin_username']); ?></span>
                         <a href="logout.php" class="text-gray-600 hover:text-gray-900">Logout</a>
                     </div>
                 </div>

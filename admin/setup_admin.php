@@ -2,8 +2,12 @@
 require_once '../config/database.php';
 
 try {
-    // Add is_admin column if it doesn't exist
-    $conn->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE");
+    // Check if is_admin column exists
+    $stmt = $conn->query("SHOW COLUMNS FROM users LIKE 'is_admin'");
+    if ($stmt->rowCount() == 0) {
+        // Add is_admin column if it doesn't exist
+        $conn->exec("ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT FALSE");
+    }
 
     // Create or update admin user
     $email = 'admin@apanvi.com';
