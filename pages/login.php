@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // If no validation errors, attempt login
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE email = ?");
+            $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE email = ?");
             $stmt->execute([$email]);
             $user = $stmt->fetch();
 
